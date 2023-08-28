@@ -34,7 +34,7 @@ public static class GuestBook
                 }
             }
 
-            // to do: sanitize familyName
+            familyName = NormalizeFamilyName(familyName);
 
 
             string? partySizeAsString;
@@ -92,6 +92,20 @@ public static class GuestBook
         {
             return true;
         }
+    }
+
+    /* Normalizes a family name so that the first letter is capitalized and 
+    every other letter is lowercased*/
+    private static string NormalizeFamilyName(string? rawFamilyName)
+    {
+        if (rawFamilyName is null)
+        {
+            throw new ArgumentException("rawFamilyName cannot be null");
+        }
+
+        string lowerCased = rawFamilyName.ToLower();
+        return char.ToUpper(lowerCased[0]) + lowerCased.Substring(1);
+
     }
 
     private static bool PartySizeAsStringIsValid(string? partySizeAsString)

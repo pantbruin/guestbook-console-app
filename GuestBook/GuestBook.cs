@@ -36,7 +36,7 @@ public static class GuestBook
 
             familyName = NormalizeFamilyName(familyName);
 
-
+        GetInteger:
             string? partySizeAsString;
             do
             {
@@ -56,6 +56,8 @@ public static class GuestBook
                 }
             }
 
+            int? partySizeAsInt = ParsePartySize(partySizeAsString);
+            if (partySizeAsInt is null) goto GetInteger;
 
         }
     }
@@ -120,6 +122,27 @@ public static class GuestBook
         else
         {
             return true;
+        }
+    }
+
+    private static int? ParsePartySize(string? partySizeAsString)
+    {
+        if (partySizeAsString is null)
+        {
+            throw new ArgumentException("partySizeAsString cannot be null");
+        }
+
+        if (!int.TryParse(partySizeAsString, out int partySizeAsInt))
+        {
+            Console.Clear();
+            Console.WriteLine("ERROR: You must enter an integer amount for your party size!");
+            Console.Write("Press the enter key to continue...");
+            Console.ReadLine();
+            return null;
+        }
+        else
+        {
+            return partySizeAsInt;
         }
     }
 

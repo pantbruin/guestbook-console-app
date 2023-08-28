@@ -59,6 +59,10 @@ public static class GuestBook
             int? partySizeAsInt = ParsePartySize(partySizeAsString);
             if (partySizeAsInt is null) goto GetInteger;
 
+            AddGuestToGuestBook(familyName, (int)partySizeAsInt);
+
+
+
         }
     }
 
@@ -144,6 +148,15 @@ public static class GuestBook
         {
             return partySizeAsInt;
         }
+    }
+
+    private static void AddGuestToGuestBook(string familyName, int partySize)
+    {
+        guestBookDictionary[familyName] = partySize;
+        Console.Clear();
+        Console.WriteLine($"{familyName} family party of {partySize} successfully added to Guest Book!");
+        Console.Write("Press enter to continue...");
+        Console.ReadLine();
     }
 
     private static void PrintAppInstructions()

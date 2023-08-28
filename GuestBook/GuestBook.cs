@@ -1,6 +1,13 @@
 ﻿using System;
 namespace GuestBookUtilities;
 
+/*
+ * To do:
+ * Address clashes (e.g. if a guest family name is already in the guest book, what to do?)
+ * 
+ * 
+ */
+
 public static class GuestBook
 {
     private static Dictionary<string, int> guestBookDictionary = new();
@@ -14,15 +21,40 @@ public static class GuestBook
         while (true)
         {
             string? familyName = GetFamilyName();
-            if (!familyNameIsValid(familyName)) continue;
+            if (!FamilyNameIsValid(familyName)) continue;
+            if (familyName is not null && (familyName.Trim().ToLower() == "finish"))
+            {
+                if (DoesUserWantToQuit())
+                {
+                    return;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
             // to do: sanitize familyName
-            //if (doesUserWantToQuit(familyName)) return;
+
 
             string? partySizeAsString;
             do
             {
                 partySizeAsString = GetPartySize(familyName);
-            } while (!partySizeAsStringIsValid(partySizeAsString));
+            } while (!PartySizeAsStringIsValid(partySizeAsString));
+
+            if (partySizeAsString is not null && (partySizeAsString.Trim().ToLower() == "finish"))
+            {
+
+                if (DoesUserWantToQuit())
+                {
+                    return;
+                }
+                else
+                {
+                    continue;
+                }
+            }
 
 
         }
@@ -47,7 +79,7 @@ public static class GuestBook
 
     }
 
-    private static bool familyNameIsValid(string? familyName)
+    private static bool FamilyNameIsValid(string? familyName)
     {
         if (familyName is null || familyName.Trim() == String.Empty || familyName.Trim().Length < 2)
         {
@@ -62,7 +94,7 @@ public static class GuestBook
         }
     }
 
-    private static bool partySizeAsStringIsValid(string? partySizeAsString)
+    private static bool PartySizeAsStringIsValid(string? partySizeAsString)
     {
         if (partySizeAsString is null || partySizeAsString.Trim() == String.Empty)
         {
@@ -80,36 +112,41 @@ public static class GuestBook
     private static void PrintAppInstructions()
     {
         Console.Clear();
-        Console.WriteLine("@@@@@ Follow the prompts or type 'exit' to finish building the Guest Book! @@@@");
+        Console.WriteLine("@@@@@ Follow the prompts or type 'finish' to finish building the Guest Book! @@@@");
         Console.WriteLine("===============================");
     }
 
-    //private static bool doesUserWantToQuit(string? userInput)
-    //{
-    //    if (userInput is not null && !(userInput.Trim().ToLower() == "exit"))
-    //    {
-    //        return false;
-    //    }
+    private static bool DoesUserWantToQuit()
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("Are you sure you want to finish?");
+            Console.Write("Type 'yes' to finish your entries or 'no' to continue building Guest Book: ");
+            string? willUserExitResponse = Console.ReadLine();
 
-    //    while (true)
-    //    {
-    //        Console.WriteLine("Are you sure you want to exit?");
-    //        Console.Write("Type 'yes' to finish your entries or 'no' to continue building Guest Book: ");
-    //        string? willUserExitResponse = Console.ReadLine();
+            string[] validResponses = { "yes", "no" };
 
-    //        string[] validResponses = { "yes", "no" };
+            if (willUserExitResponse is null || Array.IndexOf(validResponses, willUserExitResponse) == -1)
+            {
+                Console.Clear();
+                Console.WriteLine("Error: You must enter either 'yes' if you want to finish or 'no' if you want to continue building the guestbook.");
+                Console.Write("Press the enter key to continue...");
+                Console.ReadLine();
+                continue;
+            }
 
-    //        if (willUserExitResponse is null || Array.IndexOf(validResponses, willUserExitResponse) == -1)
-    //        {
-    //            Console.WriteLine("Error: You must enter either 'yes' if you want to finish or 'no' if you want to continue building the guestbook.");
-    //            continue;
-    //        }
+            if (willUserExitResponse == "yes")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
 
-    //        if (userInput == "yes" || userInput == "y") return true;
-    //        else return false;
-
-    //    }
-    //}
+        }
+    }
 }
 
 

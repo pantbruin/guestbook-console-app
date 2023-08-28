@@ -3,8 +3,8 @@ namespace GuestBookUtilities;
 
 /*
  * To do:
- * Address clashes (e.g. if a guest family name is already in the guest book, what to do?)
- * 
+ * Address dict clashes (e.g. if a guest family name is already in the guest book)
+ * Refactor main loop, some improvements could be made for DRY
  * 
  */
 
@@ -13,13 +13,20 @@ public static class GuestBook
     private static Dictionary<string, int> guestBookDictionary = new();
     public static void BuildGuestBook()
     {
-        Console.WriteLine("Welcome to Build a Guestbook App!");
-        Console.WriteLine("To begin, push the enter key...");
-        Console.ReadLine();
-        Console.Clear();
+        PrintInitialAppGreeting();
 
         while (true)
         {
+            /*
+             * First part of loop - Get the user's Family Name
+             * ==============
+             * 1. Get the raw user input for family name
+             * 2. Verify that the user input is not null or an empty string
+             * 3. Handle case such that if user input is 'finish' exit main
+             * loop
+             * 4. Normalize the user input for consistent keys in the static
+             * class member guestBookDictionary
+             */
             string? familyName = GetFamilyName();
             if (!FamilyNameIsValid(familyName)) continue;
             if (familyName is not null && (familyName.Trim().ToLower() == "finish"))
@@ -36,12 +43,24 @@ public static class GuestBook
 
             familyName = NormalizeFamilyName(familyName);
 
-        GetInteger:
-            string? partySizeAsString;
-            do
-            {
-                partySizeAsString = GetPartySize(familyName);
-            } while (!PartySizeAsStringIsValid(partySizeAsString));
+        /*
+         * Second part of loop -- Get family's party size
+         * ===================
+         * 1. Get the raw user input for a family size (as a string)
+         * 2. Verify that the user input is not null or an empty string
+         * 3. Handle case such that if user input is 'finish', exit main loop
+         * 4. Parse the string and convert to int. If unsuccessful parse,
+         * ask for int again
+         * 5. Finally, add the guest to guest book with the validated family
+         * name as string and validated party size as int
+         * Note: goto statement instead of continue to avoid asking the user
+         * for their family name again. By using goto, we can simply restart 
+         * the process for getting a party size from the user instead of
+         * starting the entire loop over again.
+         */
+        GetPartySize:
+            string? partySizeAsString = GetPartySize(familyName);
+            if (!PartySizeAsStringIsValid(partySizeAsString)) goto GetPartySize;
 
             if (partySizeAsString is not null && (partySizeAsString.Trim().ToLower() == "finish"))
             {
@@ -57,12 +76,9 @@ public static class GuestBook
             }
 
             int? partySizeAsInt = ParsePartySize(partySizeAsString);
-            if (partySizeAsInt is null) goto GetInteger;
+            if (partySizeAsInt is null) goto GetPartySize;
 
             AddGuestToGuestBook(familyName, (int)partySizeAsInt);
-
-
-
         }
     }
 
@@ -164,6 +180,30 @@ public static class GuestBook
         Console.Clear();
         Console.WriteLine("@@@@@ Follow the prompts or type 'finish' to finish building the Guest Book! @@@@");
         Console.WriteLine("===============================");
+    }
+
+    private static void PrintInitialAppGreeting()
+    {
+        Console.WriteLine("Welcome to Build a Guestbook App!");
+        Console.WriteLine("To begin, push the enter key...");
+        Console.ReadLine();
+        Console.Clear();
+    }
+
+    public static void PrintGuestListAndTotalGuests()
+    {
+        Console.Clear();
+        int totalGuests = 0;
+        foreach (KeyValuePair<string, int> entry in guestBookDictionary)
+        {
+            totalGuests += entry.Value;
+            Console.WriteLine($"{entry.Key} family: {entry.Value} guests");
+        }
+
+        Console.WriteLine("=======================");
+        Console.WriteLine($"Total Number of Guests: {totalGuests}");
+
+
     }
 
     private static bool DoesUserWantToQuit()

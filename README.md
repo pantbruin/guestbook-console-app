@@ -1,6 +1,4 @@
-# Project Title
-
-Guest Book Console Application
+# Guest Book Console Application 
 
 ## Description
 A basic console application to add families and their respective party sizes to a guest book. When done adding to the guest book, the app outputs to the console  all the families, their party sizes, and the total amount of guests that were added to the guest book.

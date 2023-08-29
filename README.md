@@ -28,5 +28,8 @@ dotnet run
 ### Inspiration
 The inspiration for making this application was to familiarize myself with C#. 
 
-### Demo
+### Demos
 ![](http://g.recordit.co/pH6oOin5bX.gif)
+![](http://g.recordit.co/7uU9froSow.gif)
+
+
